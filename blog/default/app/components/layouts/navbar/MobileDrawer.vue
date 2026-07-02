@@ -17,7 +17,6 @@ const expandedMenus = ref<Set<number>>(new Set());
 const currentSlide = ref(0);
 const slideWrapper = ref<HTMLElement>();
 
-// 判断图标是否为图片URL
 const isImageUrl = (icon: string): boolean => {
   if (!icon) return false;
   return (
@@ -26,6 +25,19 @@ const isImageUrl = (icon: string): boolean => {
     icon.startsWith('/') ||
     icon.startsWith('data:')
   );
+};
+
+const lucideIcons: Record<string, string> = {
+  fish: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 12c.94-3.46 4.94-6 8.5-6 3.56 0 6.06 2.54 7 6-.94 3.47-3.44 6-7 6s-7.56-2.53-8.5-6Z"/><path d="M18 12v.5"/><path d="M16 17.93a9.77 9.77 0 0 1 0-11.86"/><path d="M7 10.67C7 8 5.33 5 3 5c0 3.33.67 6 4 6"/><path d="M7 16.33C7 19 5.33 22 3 22c0-3.33.67-6 4-6"/></svg>',
+};
+
+const isLucideIcon = (icon: string): boolean => {
+  return icon?.startsWith('lucide:');
+};
+
+const resolveLucideIcon = (icon: string): string => {
+  const name = icon.replace('lucide:', '');
+  return lucideIcons[name] || '🐟';
 };
 
 const close = () => emit('update:modelValue', false);
@@ -106,6 +118,7 @@ watch(
                           :alt="menu.title"
                           class="menu-icon-img"
                         />
+                        <i v-else-if="menu.icon && isLucideIcon(menu.icon)" class="lucide-icon" v-html="resolveLucideIcon(menu.icon)" />
                         <i v-else-if="menu.icon" :class="menu.icon" />
                         <span>{{ menu.title }}</span>
                         <i
@@ -128,6 +141,7 @@ watch(
                               :alt="child.title"
                               class="menu-icon-img"
                             />
+                            <i v-else-if="child.icon && isLucideIcon(child.icon)" class="lucide-icon" v-html="resolveLucideIcon(child.icon)" />
                             <i v-else-if="child.icon" :class="child.icon" />
                             <span>{{ child.title }}</span>
                           </a>
@@ -141,6 +155,7 @@ watch(
                         :alt="menu.title"
                         class="menu-icon-img"
                       />
+                      <i v-else-if="menu.icon && isLucideIcon(menu.icon)" class="lucide-icon" v-html="resolveLucideIcon(menu.icon)" />
                       <i v-else-if="menu.icon" :class="menu.icon" />
                       <span>{{ menu.title }}</span>
                     </a>
@@ -165,6 +180,7 @@ watch(
                           :alt="child.title"
                           loading="lazy"
                         />
+                        <i v-else-if="child.icon && isLucideIcon(child.icon)" class="lucide-icon" v-html="resolveLucideIcon(child.icon)" />
                         <i v-else-if="child.icon" :class="child.icon" />
                         <span>{{ child.title }}</span>
                       </a>
@@ -316,23 +332,26 @@ watch(
       transition: all 0.2s;
       cursor: pointer;
 
-      i {
-        margin-right: 10px;
-        font-size: 1.1rem;
-        width: 20px;
-      }
+      .lucide-icon {
+          display: inline-flex;
+          align-items: center;
+          vertical-align: middle;
+          margin-right: 10px;
+        }
 
-      .menu-icon-img {
-        width: 20px;
-        height: 20px;
-        margin-right: 10px;
-        object-fit: contain;
-        border-radius: 4px;
-      }
+        i {
+          margin-right: 10px;
+          font-size: 1.1rem;
+          width: 20px;
+        }
 
-      span {
-        flex: 1;
-      }
+        .menu-icon-img {
+          width: 20px;
+          height: 20px;
+          margin-right: 10px;
+          object-fit: contain;
+          border-radius: 4px;
+        }
 
       &:hover {
         background: var(--flec-nav-menu-bg-hover);
@@ -385,7 +404,8 @@ watch(
         }
 
         img,
-        i {
+        i,
+        .lucide-icon {
           margin-right: 8px;
           flex-shrink: 0;
         }

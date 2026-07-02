@@ -17,7 +17,8 @@
     "moments": true,
     "feedback": true,
     "oauth": true,
-    "site_subscribe": true
+    "site_subscribe": true,
+    "friend_circle": true
   },
   "站点信息": {
     "author_email": {
@@ -190,6 +191,12 @@
           "placeholder": "链接地址"
         }
       ]
+    },
+    "friend_circle_api_url": {
+      "type": "string",
+      "title": "鱼塘API地址",
+      "placeholder": "例如 https://fc.liushen.fun/all.json",
+      "default": ""
     }
   },
   "关于页面": {

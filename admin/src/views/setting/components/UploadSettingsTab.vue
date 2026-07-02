@@ -19,6 +19,7 @@
         <el-option label="七牛云 Kodo" value="kodo" />
         <el-option label="Cloudflare R2" value="r2" />
         <el-option label="MinIO" value="minio" />
+        <el-option label="缤纷云 Bitiful" value="bitiful" />
       </el-select>
     </el-form-item>
 
@@ -169,6 +170,7 @@ const accessLabel = computed(() => {
       return 'AccessKey';
     case 'r2':
     case 'minio':
+    case 'bitiful':
       return 'Access Key';
     default:
       return 'Access Key';
@@ -185,6 +187,7 @@ const secretLabel = computed(() => {
       return 'SecretKey';
     case 'r2':
     case 'minio':
+    case 'bitiful':
       return 'Secret Key';
     default:
       return 'Secret Key';

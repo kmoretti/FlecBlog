@@ -17,6 +17,7 @@ const (
 	StorageTypeKodo  = "kodo"
 	StorageTypeR2    = "r2"
 	StorageTypeMinIO = "minio"
+	StorageTypeBitiful = "bitiful"
 )
 
 // NewStorage 根据配置创建存储实例
@@ -44,6 +45,9 @@ func NewStorage(uploadCfg *config.UploadConfig) (storage.Storage, error) {
 
 	case StorageTypeMinIO:
 		return storage.NewS3UnifiedStorage(*uploadCfg, "minio")
+
+	case StorageTypeBitiful:
+		return storage.NewS3UnifiedStorage(*uploadCfg, "bitiful")
 
 	default:
 		return nil, fmt.Errorf("不支持的存储类型: %s", storageType)

@@ -73,6 +73,9 @@ func (s *S3UnifiedStorage) ensureClient() error {
 			}
 			endpoint = fmt.Sprintf("s3.%s.qiniucs.com", s.cfg.Region)
 			useSSL = true
+		case "bitiful":
+			endpoint = "s3.bitiful.com"
+			useSSL = true
 		default:
 			return fmt.Errorf("存储类型 %s 需要配置 endpoint", s.storageType)
 		}
@@ -82,9 +85,12 @@ func (s *S3UnifiedStorage) ensureClient() error {
 	if s.storageType == "minio" && region == "" {
 		region = "us-east-1"
 	}
+	if s.storageType == "bitiful" && region == "" {
+		region = "us-east-1"
+	}
 
 	bucketLookup := minio.BucketLookupAuto
-	if s.storageType == "cos" || s.storageType == "oss" || s.storageType == "kodo" {
+	if s.storageType == "cos" || s.storageType == "oss" || s.storageType == "kodo" || s.storageType == "bitiful" {
 		bucketLookup = minio.BucketLookupDNS
 	}
 

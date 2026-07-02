@@ -19,7 +19,6 @@ const displayTitle = computed(() => {
   return currentArticle.value?.title || basicConfig.value.title;
 });
 
-// 判断图标是否为图片URL
 const isImageUrl = (icon: string): boolean => {
   if (!icon) return false;
   return (
@@ -28,6 +27,19 @@ const isImageUrl = (icon: string): boolean => {
     icon.startsWith('/') ||
     icon.startsWith('data:')
   );
+};
+
+const lucideIcons: Record<string, string> = {
+  fish: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 12c.94-3.46 4.94-6 8.5-6 3.56 0 6.06 2.54 7 6-.94 3.47-3.44 6-7 6s-7.56-2.53-8.5-6Z"/><path d="M18 12v.5"/><path d="M16 17.93a9.77 9.77 0 0 1 0-11.86"/><path d="M7 10.67C7 8 5.33 5 3 5c0 3.33.67 6 4 6"/><path d="M7 16.33C7 19 5.33 22 3 22c0-3.33.67-6 4-6"/></svg>',
+};
+
+const isLucideIcon = (icon: string): boolean => {
+  return icon?.startsWith('lucide:');
+};
+
+const resolveLucideIcon = (icon: string): string => {
+  const name = icon.replace('lucide:', '');
+  return lucideIcons[name] || '🐟';
 };
 </script>
 
@@ -44,6 +56,7 @@ const isImageUrl = (icon: string): boolean => {
               :alt="menu.title"
               class="menu-icon-img"
             />
+            <i v-else-if="menu.icon && isLucideIcon(menu.icon)" class="lucide-icon" v-html="resolveLucideIcon(menu.icon)" />
             <i v-else-if="menu.icon" :class="menu.icon" />
             <span>{{ menu.title }}</span>
             <i class="ri-arrow-down-s-line arrow-icon" />
@@ -56,6 +69,7 @@ const isImageUrl = (icon: string): boolean => {
               :alt="menu.title"
               class="menu-icon-img"
             />
+            <i v-else-if="menu.icon && isLucideIcon(menu.icon)" class="lucide-icon" v-html="resolveLucideIcon(menu.icon)" />
             <i v-else-if="menu.icon" :class="menu.icon" />
             <span>{{ menu.title }}</span>
             <i class="ri-arrow-down-s-line arrow-icon" />
@@ -71,6 +85,7 @@ const isImageUrl = (icon: string): boolean => {
                   :alt="child.title"
                   class="menu-icon-img"
                 />
+                <i v-else-if="child.icon && isLucideIcon(child.icon)" class="lucide-icon" v-html="resolveLucideIcon(child.icon)" />
                 <i v-else-if="child.icon" :class="child.icon" />
                 <span>{{ child.title }}</span>
               </a>
@@ -86,6 +101,7 @@ const isImageUrl = (icon: string): boolean => {
             :alt="menu.title"
             class="menu-icon-img"
           />
+          <i v-else-if="menu.icon && isLucideIcon(menu.icon)" class="lucide-icon" v-html="resolveLucideIcon(menu.icon)" />
           <i v-else-if="menu.icon" :class="menu.icon" />
           <span>{{ menu.title }}</span>
         </a>
@@ -140,6 +156,13 @@ const isImageUrl = (icon: string): boolean => {
       cursor: pointer;
 
       i {
+        font-size: 1rem;
+      }
+
+      .lucide-icon {
+        display: inline-flex;
+        align-items: center;
+        vertical-align: middle;
         font-size: 1rem;
       }
 
@@ -230,6 +253,13 @@ const isImageUrl = (icon: string): boolean => {
               color: var(--flec-nav-fixed-font-hover);
               background: var(--flec-nav-menu-bg-hover);
               border-radius: 12px;
+            }
+
+            .lucide-icon {
+              display: inline-flex;
+              align-items: center;
+              margin-right: 6px;
+              vertical-align: middle;
             }
 
             i {
