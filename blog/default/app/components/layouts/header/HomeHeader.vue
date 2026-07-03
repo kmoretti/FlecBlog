@@ -2,12 +2,12 @@
 const { basicConfig } = useSysConfig();
 const { themeConfig } = useTheme();
 const displayText = ref('');
-const typingSpeed = 150; // 打字速度（毫秒）
-const deletingSpeed = 80; // 删除速度（毫秒）
-const pauseTime = 2000; // 暂停时间（毫秒）
+const typingSpeed = 150;
+const deletingSpeed = 80;
+const pauseTime = 2000;
 let typingTimer: number | null = null;
+let isInitialized = false;
 
-// 获取打字机文本列表
 const getTypingTexts = (): string[] => {
   try {
     const raw = themeConfig.value.typing_texts;
@@ -33,12 +33,17 @@ const scrollToContent = () => {
   });
 };
 
-const typeWriter = () => {
+const startTypeWriter = () => {
   const texts = getTypingTexts();
   if (texts.length === 0) return;
 
-  let textIndex = 0; // 当前显示的文本索引
-  let charIndex = 0; // 当前字符索引
+  if (typingTimer) {
+    clearTimeout(typingTimer);
+  }
+  displayText.value = '';
+
+  let textIndex = 0;
+  let charIndex = 0;
   let isDeleting = false;
 
   const animate = () => {
@@ -46,26 +51,22 @@ const typeWriter = () => {
     if (!currentText) return;
 
     if (!isDeleting) {
-      // 打字阶段
       if (charIndex < currentText.length) {
         displayText.value += currentText.charAt(charIndex);
         charIndex++;
         typingTimer = window.setTimeout(animate, typingSpeed);
       } else {
-        // 打完后停留一会再删除
         isDeleting = true;
         typingTimer = window.setTimeout(animate, pauseTime);
       }
     } else {
-      // 删除阶段
       if (charIndex > 0) {
         displayText.value = currentText.substring(0, charIndex - 1);
         charIndex--;
         typingTimer = window.setTimeout(animate, deletingSpeed);
       } else {
-        // 删除完成，切换到下一条文本
         isDeleting = false;
-        textIndex = (textIndex + 1) % texts.length; // 循环到下一条
+        textIndex = (textIndex + 1) % texts.length;
         typingTimer = window.setTimeout(animate, typingSpeed);
       }
     }
@@ -74,9 +75,21 @@ const typeWriter = () => {
   animate();
 };
 
+watch(
+  () => themeConfig.value.typing_texts,
+  (val) => {
+    if (val) {
+      isInitialized = true;
+      startTypeWriter();
+    }
+  },
+);
+
 onMounted(() => {
-  // 延迟一点开始打字效果
-  setTimeout(typeWriter, 500);
+  if (getTypingTexts().length > 0) {
+    isInitialized = true;
+    setTimeout(startTypeWriter, 500);
+  }
 });
 
 onUnmounted(() => {
