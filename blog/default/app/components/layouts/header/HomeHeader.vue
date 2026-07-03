@@ -10,8 +10,17 @@ let typingTimer: number | null = null;
 // 获取打字机文本列表
 const getTypingTexts = (): string[] => {
   try {
-    const parsed = JSON.parse(themeConfig.value.typing_texts || '[]');
-    return Array.isArray(parsed) ? parsed : [];
+    const raw = themeConfig.value.typing_texts;
+    if (!raw) return [];
+    const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+    if (!Array.isArray(parsed)) return [];
+    return parsed.map((item: unknown) => {
+      if (typeof item === 'string') return item;
+      if (item && typeof item === 'object' && 'value' in (item as Record<string, unknown>)) {
+        return String((item as Record<string, string>).value);
+      }
+      return '';
+    }).filter(Boolean);
   } catch {
     return [];
   }
